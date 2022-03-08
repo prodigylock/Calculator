@@ -1,6 +1,10 @@
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+
+import javafx.scene.layout.Border;
+
+import java.awt.Color;
 import java.awt.event.*;
 import java.text.DecimalFormat;  
 
@@ -9,6 +13,8 @@ public class App {
     private static double a;
     private static double b;
     private static int mode=0;
+    private static int decimalCountA;
+    private static int decimalCountB;
 
     public static void main(String[] args) throws Exception {
         JFrame f = new JFrame("JFrame Test");
@@ -23,30 +29,20 @@ public class App {
 
         DecimalFormat df = new DecimalFormat("###.############");
 
-        // paddingTop+=(spacing+buttonsSizeY);
-
         JLabel l = new JLabel("");
         l.setBounds(paddingSides,paddingSides,3*(spacing+buttonsSizeX)-spacing,buttonsSizeY);
         f.add(l);
 
-        JLabel l2 = new JLabel("");
-        l2.setBounds(50,75,500,30);
-        f.add(l2);
-
-        
-
         int space2 = paddingSides+(3*(buttonsSizeX+spacing));
 
         
-        JButton buttonComma = new JButton("+");
+        JButton buttonComma = new JButton(".");
         buttonComma.setBounds(paddingSides+(0*(buttonsSizeX+spacing)),paddingTop+(3*(buttonsSizeY+spacing)),buttonsSizeX,buttonsSizeY);
         buttonComma.addActionListener(new ActionListener(){  
             public void actionPerformed(ActionEvent e){
                 buttonComma.setEnabled(false);
-                
-
-                
-
+                decimalCountA = getDecimalLenght(a);
+                decimalCountB = getDecimalLenght(b);
             }   
         });
         f.add(buttonComma);
@@ -60,26 +56,39 @@ public class App {
                 button.setBounds(paddingSides+(j*(buttonsSizeX+spacing)), paddingTop+(i*(buttonsSizeY+spacing)), buttonsSizeX, buttonsSizeY);
                 button.addActionListener(new ActionListener(){  
                     public void actionPerformed(ActionEvent e){  
+                        String a_out = df.format(a);
+                        String b_out = df.format(b);
+                        String modeSign[]={"","+","-","*","/"};
+                        if (!buttonComma.isEnabled()) {
+                            a_out = a+"";
+                            b_out = b+"";
+                        }
                         if (mode==0) {
                             a*=10;
                             a+=Integer.parseInt(button.getText());
-                            l.setText(df.format(a)+"");
+                            l.setText(a_out+"");
                         } else if (mode==1){
                             b*=10;
                             b+=Integer.parseInt(button.getText());
-                            l.setText(df.format(a)+"+"+df.format(b));
+                            l.setText(a_out+"+"+b_out);
                         } else if (mode==2) {
                             b*=10;
                             b+=Integer.parseInt(button.getText());
-                            l.setText(df.format(a)+"-"+df.format(b));
+                            l.setText(a_out+"-"+b_out);
                         } else if (mode==3) {
                             b*=10;
                             b+=Integer.parseInt(button.getText());
-                            l.setText(df.format(a)+"*"+df.format(b));
+                            l.setText(a_out+"*"+b_out);
                         } else if (mode==4) {
                             b*=10;
                             b+=Integer.parseInt(button.getText());
-                            l.setText(df.format(a)+"/"+df.format(b));
+                            l.setText(a_out+"/"+b_out);
+                        }
+
+                        if (mode==0) {
+                            l.setText(a_out+modeSign[mode]);
+                        } else {
+                            l.setText(a_out+modeSign[mode]+b_out);
                         }
                     }               
                 });
@@ -173,6 +182,7 @@ public class App {
                 buttonMinus.setEnabled(true);
                 buttonTimes.setEnabled(true);
                 buttonDivide.setEnabled(true);
+                buttonComma.setEnabled(true);
             }               
         });
         f.add(buttonClear);
@@ -209,6 +219,7 @@ public class App {
                 buttonMinus.setEnabled(true);
                 buttonTimes.setEnabled(true);
                 buttonDivide.setEnabled(true);
+                buttonComma.setEnabled(true);
             }               
         });
         f.add(buttonEquals);
@@ -225,7 +236,11 @@ public class App {
         
     }
         
-    
+    public static int getDecimalLenght(double number){
+        DecimalFormat df = new DecimalFormat("###.############");
+        String[] DecimalSplit = df.format(number).split("\\.");
+        return DecimalSplit[1].length();
+    }
 
     
 
