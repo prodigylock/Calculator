@@ -1,10 +1,6 @@
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-
-import javafx.scene.layout.Border;
-
-import java.awt.Color;
 import java.awt.event.*;
 import java.text.DecimalFormat;  
 
@@ -27,7 +23,7 @@ public class App {
         int buttonsSizeX = 50;
         int buttonsSizeY = 50;
 
-        DecimalFormat df = new DecimalFormat("###.############");
+        DecimalFormat df = new DecimalFormat("###.####");
 
         JLabel l = new JLabel("");
         l.setBounds(paddingSides,paddingSides,3*(spacing+buttonsSizeX)-spacing,buttonsSizeY);
@@ -56,33 +52,31 @@ public class App {
                 button.setBounds(paddingSides+(j*(buttonsSizeX+spacing)), paddingTop+(i*(buttonsSizeY+spacing)), buttonsSizeX, buttonsSizeY);
                 button.addActionListener(new ActionListener(){  
                     public void actionPerformed(ActionEvent e){  
+                        int number = Integer.parseInt(button.getText());
+                        if (buttonComma.isEnabled()) {
+                            if (mode==0) {
+                                a*=10;
+                                a+=number;
+                            } else {
+                                b*=10;
+                                b+=number;
+                            }
+                        } else {
+                            if (mode==0) {
+                                a+=(number/Math.pow(10,decimalCountA+1));
+                                decimalCountA++;
+                            } else {
+                                b+=(number/Math.pow(10,decimalCountB+1));
+                                decimalCountB++;
+                            }
+                        }
+
                         String a_out = df.format(a);
                         String b_out = df.format(b);
                         String modeSign[]={"","+","-","*","/"};
                         if (!buttonComma.isEnabled()) {
                             a_out = a+"";
                             b_out = b+"";
-                        }
-                        if (mode==0) {
-                            a*=10;
-                            a+=Integer.parseInt(button.getText());
-                            l.setText(a_out+"");
-                        } else if (mode==1){
-                            b*=10;
-                            b+=Integer.parseInt(button.getText());
-                            l.setText(a_out+"+"+b_out);
-                        } else if (mode==2) {
-                            b*=10;
-                            b+=Integer.parseInt(button.getText());
-                            l.setText(a_out+"-"+b_out);
-                        } else if (mode==3) {
-                            b*=10;
-                            b+=Integer.parseInt(button.getText());
-                            l.setText(a_out+"*"+b_out);
-                        } else if (mode==4) {
-                            b*=10;
-                            b+=Integer.parseInt(button.getText());
-                            l.setText(a_out+"/"+b_out);
                         }
 
                         if (mode==0) {
@@ -101,12 +95,24 @@ public class App {
         button.setBounds(paddingSides+(1*(buttonsSizeX+spacing)), paddingTop+(3*(buttonsSizeY+spacing)), buttonsSizeX, buttonsSizeY);
         button.addActionListener(new ActionListener(){  
             public void actionPerformed(ActionEvent e){  
-                if (mode==0) {
-                    a*=10;
-                    l.setText(df.format(a)+"");
+                
+
+                if (buttonComma.isEnabled()) {
+                    if (mode==0) {
+                        a*=10;
+                        l.setText(df.format(a)+"");
+                    } else {
+                        b*=10;
+                        l.setText(df.format(a)+"+"+df.format(b));
+                    }
                 } else {
-                    b*=10;
-                    l.setText(df.format(a)+"+"+df.format(b));
+                    if (mode==0) {
+                        decimalCountA++;
+                        l.setText(String.format("%." + decimalCountA + "f", a));
+                    } else {
+                        decimalCountB++;
+                        l.setText(String.format("%." + decimalCountA + "f", a));
+                    }
                 }
             }               
         });
@@ -123,7 +129,7 @@ public class App {
                 buttonPlus.setEnabled(false);
                 mode = 1;
                 l.setText(df.format(a)+"+"+df.format(b));
-                
+                buttonComma.setEnabled(true);
 
             }   
         });
@@ -137,6 +143,7 @@ public class App {
                 buttonMinus.setEnabled(false);
                 mode = 2;
                 l.setText(df.format(a)+"-"+df.format(b));
+                buttonComma.setEnabled(true);
             }   
         });
         f.add(buttonMinus);
@@ -149,6 +156,7 @@ public class App {
                 buttonTimes.setEnabled(false);
                 mode = 3;
                 l.setText(df.format(a)+"*"+df.format(b));
+                buttonComma.setEnabled(true);
             }   
         });
         f.add(buttonTimes);
@@ -160,6 +168,7 @@ public class App {
                 buttonDivide.setEnabled(false);
                 mode = 4;
                 l.setText(df.format(a)+"/"+df.format(b));
+                buttonComma.setEnabled(true);
             }   
         });
         f.add(buttonDivide);
@@ -237,9 +246,14 @@ public class App {
     }
         
     public static int getDecimalLenght(double number){
-        DecimalFormat df = new DecimalFormat("###.############");
+        DecimalFormat df = new DecimalFormat("###.####");
         String[] DecimalSplit = df.format(number).split("\\.");
-        return DecimalSplit[1].length();
+        try {
+            return DecimalSplit[1].length();
+        } catch (Exception e) {
+            return 0;
+        }
+        
     }
 
     
